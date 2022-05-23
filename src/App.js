@@ -1,23 +1,59 @@
-import logo from './logo.svg';
+
 import './App.css';
+import axios from 'axios';
+import { useState } from 'react';
 
 function App() {
+  const [book,setBook] = useState('');
+  const[result,setResult] =useState([]);
+  const [apiKey,setApiKey] = useState('AIzaSyDZ6NWc--Tseo-RoZF6mgt4ovekgkWQ55A');
+
+  function handleChange(event){
+   const book =event.target.value;
+   
+   setBook(book);
+  
+  }
+  function handleSubmit(event){
+    event.preventDefault();
+    axios.get("https://www.googleapis.com/books/v1/volumes?q="+book+"&key="+apiKey+"&maxResults=20")
+    .then((event)=>{return setResult(event.data.items)})
+    
+
+    
+
+  }
+ 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="container">
+      <h1>Books Finder</h1>
+      <form onSubmit={handleSubmit}>
+        <div className='form-group'>
+        <input type='text' onChange={handleChange} className='input-control mt-10'placeholder='search for books' autoComplete='off'
+        ></input>
+        </div>
+        
+      <button type='submit' className='btn btn-danger'>search</button>
+      
+      </form>
+      <ul>
+        {
+          result.map((e)=>{  
+            console.log(e)
+            
+            return(
+            <li><img src={e.volumeInfo.imageLinks.thumbnail}/>
+            <h3>{e.volumeInfo.title}</h3>
+            <h4>Author: {e.volumeInfo.authors}</h4>
+            <a href={e.volumeInfo.previewLink }>Read more</a>
+            
+            </li>)
+          })
+        }
+
+      </ul>
+      
+      
     </div>
   );
 }
